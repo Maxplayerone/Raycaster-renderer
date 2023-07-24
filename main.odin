@@ -1,3 +1,4 @@
+/*
 package main
 
 import ray "vendor:raylib"
@@ -116,7 +117,7 @@ render_rays :: proc(){
 	for i in 0..<ray_count{
 		//horizontal lines
 		neg_inv_tan: f32 = -1/math.tan(ray_angle)
-		if ray_angle > PI{
+		if ray_angle > PI{ //looking up
 			ray_y = cast(f32)((cast(i32)player_y>>6)<<6) - 0.0001
 			ray_x = (player_y - ray_y) * neg_inv_tan + player_x
 			y_offset = -64
@@ -137,7 +138,7 @@ render_rays :: proc(){
 			map_x = cast(i32)ray_x>>6
 			map_y = cast(i32)ray_y>>6
 			map_index = map_y * MAP_SIZE_X + map_x
-			if map_index < MAP_SIZE && MAP[map_index] == 1{
+			if map_index > 0 || map_index < MAP_SIZE && MAP[map_index] == 1{
 				dof = 8
 			}
 			else{
@@ -171,7 +172,7 @@ render_rays :: proc(){
 			map_x = cast(i32)ray_x>>6
 			map_y = cast(i32)ray_y>>6
 			map_index = map_y * MAP_SIZE_X + map_x
-			if map_index < MAP_SIZE && MAP[map_index] == 1{
+			if map_index > 0  && map_index < MAP_SIZE && MAP[map_index] == 1{
 				dof = 8
 			}
 			else{
@@ -180,7 +181,20 @@ render_rays :: proc(){
 				dof += 1
 			}
 		}
-		ray.DrawLine(cast(i32)player_x, cast(i32)player_y, cast(i32)ray_x, cast(i32)ray_y, ray.Color{0, 0, 255, 255})
+		//ray.DrawLine(cast(i32)player_x, cast(i32)player_y, cast(i32)ray_x, cast(i32)ray_y, ray.Color{0, 0, 255, 255})
 	}
 	
 }
+*/
+package main
+
+import ray "vendor:raylib"
+import "core:fmt"
+import math "core:math/linalg"
+
+SCREEN_WIDTH :: 640
+SCREEN_HEIGHT :: 480
+
+MAP_WIDTH :: 24
+MAP_HEIHT :: 24
+
