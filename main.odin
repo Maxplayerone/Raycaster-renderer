@@ -2,12 +2,20 @@ package main
 
 import ray "vendor:raylib"
 import "core:fmt"
+import linalg "core:math/linalg"
 
 WINDOW_WIDTH :: 1024
 WINDOW_HEIGHT :: 512
 
-player_x: i32 = 300
-player_y: i32 = 300
+PI: f32 = 3.14
+
+player_x: f32 = 300
+player_y: f32 = 300
+
+player_angle: f32 = 0.0
+delta_x: f32 = 0
+delta_y: f32 = 0
+DELTA_MULTIPLAYER :: 5
 
 PLAYER_SIZE :: 8
 
@@ -31,6 +39,9 @@ main :: proc(){
 	
 	ray.SetTargetFPS(60)
 	
+	delta_x = linalg.cos(player_angle) * DELTA_MULTIPLAYER
+	delta_y = linalg.sin(player_angle) * DELTA_MULTIPLAYER
+	
 	for !ray.WindowShouldClose(){
 		update_player()
 		render()
@@ -38,10 +49,30 @@ main :: proc(){
 }
 
 update_player :: proc(){
-	if ray.IsKeyDown(.A) do player_x -= 2
-	if ray.IsKeyDown(.D) do player_x += 2
-	if ray.IsKeyDown(.W) do player_y -= 2
-	if ray.IsKeyDown(.S) do player_y += 2
+	if ray.IsKeyDown(.A) {
+		player_angle -= 0.1 
+		if player_angle < 0{
+			player_angle += 2 * PI
+		}
+		delta_x = linalg.cos(player_angle) * DELTA_MULTIPLAYER
+		delta_y = linalg.sin(player_angle) * DELTA_MULTIPLAYER
+	} 
+	if ray.IsKeyDown(.D) {
+		player_angle += 0.1 
+		if player_angle > 2 * PI{
+			player_angle -= 2 * PI
+		}
+		delta_x = linalg.cos(player_angle) * DELTA_MULTIPLAYER
+		delta_y = linalg.sin(player_angle) * DELTA_MULTIPLAYER
+	} 
+	if ray.IsKeyDown(.W){
+		player_x += delta_x
+		player_y += delta_y
+	}
+	if ray.IsKeyDown(.S){
+		player_x -= delta_x
+		player_y -= delta_y
+	}
 }
 
 render :: proc(){
@@ -55,7 +86,9 @@ render :: proc(){
 }
 
 render_player :: proc(){
-	ray.DrawRectangle(player_x, player_y, PLAYER_SIZE, PLAYER_SIZE, ray.Color{255, 255, 0, 255})
+	ray.DrawRectangle(cast(i32)player_x, cast(i32)player_y, PLAYER_SIZE, PLAYER_SIZE, ray.Color{255, 255, 0, 255})
+
+	ray.DrawLine(cast(i32)player_x, cast(i32)player_y, cast(i32)(player_x + delta_x * DELTA_MULTIPLAYER), cast(i32)(player_y + delta_y * DELTA_MULTIPLAYER), ray.Color{0, 255, 0, 255})
 }
 
 render_map :: proc(){
